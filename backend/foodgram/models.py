@@ -46,3 +46,9 @@ class Subscription(models.Model):
         User, on_delete=models.CASCADE, related_name='subscriptions')
     subscribed_to = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='subscribers')
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='profile')
+    avatar = models.ImageField(upload_to='users/', null=True, blank=True)
