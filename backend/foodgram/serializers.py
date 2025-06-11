@@ -58,6 +58,12 @@ class AvatarSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Ingredient
+        fields = ('id', 'name', 'measurement_unit')
+
+
+class RecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         queryset=models.Ingredient.objects)
     name = serializers.SerializerMethodField()
@@ -75,7 +81,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField()
     author = UserSerializer(read_only=True)
-    ingredients = IngredientSerializer(many=True)
+    ingredients = RecipeIngredientSerializer(many=True)
 
     class Meta:
         model = models.Recipe
@@ -98,7 +104,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe = models.Recipe.objects.create(**validated_data)
         for ingredient_data in ingredients_data:
             ingredient_data['recipe'] = recipe.pk
-            IngredientSerializer.create(**ingredient_data)
+            RecipeIngredientSerializer.create(**ingredient_data)
         return recipe
 
     def update(self, instance, validated_data):
@@ -112,9 +118,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             ingredient = ingredient_mapping.get(ingredient_id, None)
             data['recipe'] = instance.pk
             if ingredient is None:
-                IngredientSerializer.create(**data)
+                RecipeIngredientSerializer.create(**data)
             else:
-                IngredientSerializer.update(ingredient, **data)
+                RecipeIngredientSerializer.update(ingredient, **data)
 
         for ingredient_id, ingredient in ingredient_mapping.items():
             if ingredient_id not in data_mapping:
