@@ -24,6 +24,35 @@ class AvatarViewSet(
         return self.request.user.profile
 
 
+class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
+    serializer_class = serializers.SubscriptionSerializer
+
+    def get_queryset(self):
+        return self.request.user.subscriptions.select_related('subscribed_to')
+
+    def create(self, request, id, *args, **kwargs):
+        subscribed_to = get_object_or_404(models.User, pk=id)
+
+        if (
+            subscribed_to == self.request.user or
+            self.request.user.subscriptions.filter(
+                subscribed_to=subscribed_to).exists()
+        ): return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        instance = models.Subscription.objects.create(
+            user=request.user, subscribed_to=subscribed_to)
+        serializer = self.get_serializer(instance=instance)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, id, *args, **kwargs):
+        subscribed_to = get_object_or_404(models.User, pk=id)
+        queryset = request.user.subscriptions.filter(subscribed_to=subscribed_to)
+        if not queryset.exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        queryset.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class IngredientViewSet(ReadOnlyModelViewSet):
     queryset = models.Ingredient.objects
     serializer_class = serializers.IngredientSerializer
