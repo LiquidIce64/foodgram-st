@@ -6,7 +6,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import (
-    ModelViewSet, GenericViewSet, mixins
+    ModelViewSet, ReadOnlyModelViewSet,
+    GenericViewSet, mixins
 )
 
 from . import models, serializers, filters
@@ -96,3 +97,9 @@ class DownloadShoppingCartView(APIView):
 class FavoriteView(AddRemoveRecipeView):
     def get_queryset(self, request) -> QuerySet:
         return request.user.favorite
+
+
+class IngredientViewSet(ReadOnlyModelViewSet):
+    queryset = models.Ingredient.objects
+    serializer_class = serializers.IngredientSerializer
+    filter_backends = (filters.NameSearchFilter,)

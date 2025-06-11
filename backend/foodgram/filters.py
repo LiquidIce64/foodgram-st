@@ -1,4 +1,4 @@
-from rest_framework.filters import BaseFilterBackend
+from rest_framework.filters import BaseFilterBackend, SearchFilter
 
 
 def param_equals(request, param, value):
@@ -25,3 +25,10 @@ class RecipeFilterBackend(BaseFilterBackend):
             queryset = queryset.filter(favorites__user=request.user)
 
         return queryset
+
+
+class NameSearchFilter(SearchFilter):
+    search_param = 'name'
+
+    def get_search_fields(self, view, request):
+        return ('^name',)

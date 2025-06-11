@@ -6,6 +6,7 @@ from . import views
 
 router_root = SimpleRouter()
 router_root.register('recipes', views.RecipeViewSet, basename='recipe')
+router_root.register('ingredients', views.IngredientViewSet, basename='ingredient')
 
 router_profile = SimpleRouter()
 router_profile.register('avatar', views.AvatarViewSet, basename='avatar')
