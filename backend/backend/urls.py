@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import View
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('djoser.urls')),
-    path('api/auth/', include('djoser.urls.authtoken')),
-    path('api/', include('foodgram.urls'))
+    path('api/', include('foodgram.urls')),
+
+    # Stub view to add a path to use for reversing
+    path('s/<id>', View.as_view(), name='short-link'),
 ]
