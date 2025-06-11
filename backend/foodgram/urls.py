@@ -18,5 +18,10 @@ urlpatterns = [
     path('', include(router_root.urls)),
     path('users/me/', include(router_profile.urls)),
 
-    path('recipes/<id>/get-link/', views.RecipeLinkView.as_view(), name='get-short-link')
+    path('recipes/<id>/get-link/',
+         views.RecipeLinkView.as_view(), name='get-short-link'),
+    path('recipes/<id>/shopping_cart/',
+         views.ShoppingCartView.as_view(), name='shopping_cart'),
+    path('recipes/download_shopping_cart/',
+         views.DownloadShoppingCartView.as_view(), name='download_shopping_cart')
 ]
