@@ -37,13 +37,17 @@ class RecipeLinkView(APIView):
         })
 
 
-class ShoppingCartView(APIView):
+class AddRemoveRecipeView(APIView):
+    def get_queryset(self, request) -> QuerySet:
+        raise NotImplementedError
+
     def post(self, request, id, *args, **kwargs):
         recipe = get_object_or_404(models.Recipe, pk=id)
-        if request.user.shopping_cart.filter(recipe=recipe).exists():
+        queryset = self.get_queryset().filter(recipe=recipe)
+        if queryset.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        models.ShoppingCartItem.objects.create(
+        queryset.create(
             user=request.user, recipe=recipe)
 
         serializer = serializers.RecipeMinifiedSerializer(instance=recipe)
@@ -51,13 +55,18 @@ class ShoppingCartView(APIView):
 
     def delete(self, request, id, *args, **kwargs):
         recipe = get_object_or_404(models.Recipe, pk=id)
-        queryset = request.user.shopping_cart.filter(recipe=recipe)
+        queryset = self.get_queryset().filter(recipe=recipe)
         if not queryset.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         queryset.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShoppingCartView(AddRemoveRecipeView):
+    def get_queryset(self, request) -> QuerySet:
+        return request.user.shopping_cart
 
 
 class DownloadShoppingCartView(APIView):
@@ -82,3 +91,8 @@ class DownloadShoppingCartView(APIView):
         response = HttpResponse(file_content, content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename="Shopping list.txt"'
         return response
+
+
+class FavoriteView(AddRemoveRecipeView):
+    def get_queryset(self, request) -> QuerySet:
+        return request.user.favorite

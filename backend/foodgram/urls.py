@@ -20,8 +20,12 @@ urlpatterns = [
 
     path('recipes/<id>/get-link/',
          views.RecipeLinkView.as_view(), name='get-short-link'),
+
     path('recipes/<id>/shopping_cart/',
          views.ShoppingCartView.as_view(), name='shopping_cart'),
     path('recipes/download_shopping_cart/',
-         views.DownloadShoppingCartView.as_view(), name='download_shopping_cart')
+         views.DownloadShoppingCartView.as_view(), name='download_shopping_cart'),
+
+    path('recipes/<id>/favorite/',
+         views.FavoriteView.as_view(), name='favorite_recipe')
 ]
