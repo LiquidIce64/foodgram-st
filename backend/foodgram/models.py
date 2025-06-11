@@ -23,15 +23,15 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.CASCADE, related_name='recipe_ingredients')
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='recipe_ingredients')
+        Recipe, on_delete=models.CASCADE, related_name='ingredients')
     amount = models.IntegerField()
 
 
 class ShoppingCartItem(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='shopping_cart_items')
+        User, on_delete=models.CASCADE, related_name='shopping_cart')
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='shopping_cart_items')
+        Recipe, on_delete=models.CASCADE, related_name='in_shopping_carts')
 
 
 class Favorite(models.Model):

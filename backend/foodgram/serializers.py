@@ -19,15 +19,12 @@ class UserSerializer(BaseUserSerializer):
             'id', 'username', 'email',
             'first_name', 'last_name',
         )
-        read_only_fields = ('username', 'is_subscribed', 'avatar')
-        extra_kwargs = {
-            'email': {'required': True},
-            'first_name': {'required': True},
-            'last_name': {'required': True},
-        }
+        read_only_fields = ('username',)
+        required = ('email', 'first_name', 'last_name')
 
     def get_is_subscribed(self, obj):
-        return obj.subscribers.contains(self.context['request'].user)
+        user = self.context['request'].user
+        return user.subscriptions.filter(subscribed_to=obj).exists()
 
     def get_avatar(self, obj):
         if obj.profile.avatar is None:
@@ -42,11 +39,7 @@ class UserCreateSerializer(BaseUserCreateSerializer):
             'username', 'password', 'email',
             'first_name', 'last_name',
         )
-        extra_kwargs = {
-            'email': {'required': True},
-            'first_name': {'required': True},
-            'last_name': {'required': True},
-        }
+        required = ('email', 'first_name', 'last_name')
 
     def perform_create(self, validated_data):
         user = super().perform_create(validated_data)
@@ -62,3 +55,82 @@ class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Profile
         fields = ('user', 'avatar')
+
+
+class IngredientSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Ingredient.objects)
+    name = serializers.SerializerMethodField()
+    measurement_unit = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.RecipeIngredient
+        fields = ('id', 'recipe', 'amount')
+        write_only = ('recipe',)
+        allow_empty = ('recipe',)
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
+    image = Base64ImageField()
+    author = UserSerializer(read_only=True)
+    ingredients = IngredientSerializer(many=True)
+
+    class Meta:
+        model = models.Recipe
+        fields = (
+            'id', 'author', 'name', 'image',
+            'ingredients', 'cooking_time', 'text',
+        )
+
+    def get_is_favorited(self, obj):
+        user = self.context['request'].user
+        return user.favorites.filter(recipe=obj).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context['request'].user
+        return user.shopping_cart.filter(recipe=obj).exists()
+
+    def create(self, validated_data):
+        ingredients_data = validated_data.pop('ingredients')
+        validated_data['author'] = self.context['request'].user
+        recipe = models.Recipe.objects.create(**validated_data)
+        for ingredient_data in ingredients_data:
+            ingredient_data['recipe'] = recipe.pk
+            IngredientSerializer.create(**ingredient_data)
+        return recipe
+
+    def update(self, instance, validated_data):
+        ingredients_data = validated_data.pop('ingredients')
+        instance = super().update(instance, validated_data)
+
+        ingredient_mapping = {ingredient.pk: ingredient for ingredient in instance.ingredients}
+        data_mapping = {item['id']: item for item in ingredients_data}
+
+        for ingredient_id, data in data_mapping.items():
+            ingredient = ingredient_mapping.get(ingredient_id, None)
+            data['recipe'] = instance.pk
+            if ingredient is None:
+                IngredientSerializer.create(**data)
+            else:
+                IngredientSerializer.update(ingredient, **data)
+
+        for ingredient_id, ingredient in ingredient_mapping.items():
+            if ingredient_id not in data_mapping:
+                ingredient.delete()
+
+        return instance
+
+
+class RecipeMinifiedSerializer(serializers.ModelSerializer):
+    image = Base64ImageField()
+
+    class Meta:
+        model = models.Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only = '__all__'
+
+
+class SubscriptionSerializer(UserSerializer):
+    recipes = RecipeMinifiedSerializer(many=True)
