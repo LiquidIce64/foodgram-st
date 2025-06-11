@@ -44,7 +44,7 @@ class AddRemoveRecipeView(APIView):
 
     def post(self, request, id, *args, **kwargs):
         recipe = get_object_or_404(models.Recipe, pk=id)
-        queryset = self.get_queryset().filter(recipe=recipe)
+        queryset = self.get_queryset(request).filter(recipe=recipe)
         if queryset.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -56,7 +56,7 @@ class AddRemoveRecipeView(APIView):
 
     def delete(self, request, id, *args, **kwargs):
         recipe = get_object_or_404(models.Recipe, pk=id)
-        queryset = self.get_queryset().filter(recipe=recipe)
+        queryset = self.get_queryset(request).filter(recipe=recipe)
         if not queryset.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
