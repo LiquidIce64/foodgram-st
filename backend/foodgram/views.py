@@ -24,6 +24,12 @@ class AvatarViewSet(
         return self.request.user.profile
 
 
+class IngredientViewSet(ReadOnlyModelViewSet):
+    queryset = models.Ingredient.objects
+    serializer_class = serializers.IngredientSerializer
+    filter_backends = (filters.NameSearchFilter,)
+
+
 class RecipeViewSet(ModelViewSet):
     queryset = models.Recipe.objects
     serializer_class = serializers.RecipeSerializer
@@ -65,6 +71,11 @@ class AddRemoveRecipeView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class FavoriteView(AddRemoveRecipeView):
+    def get_queryset(self, request) -> QuerySet:
+        return request.user.favorite
+
+
 class ShoppingCartView(AddRemoveRecipeView):
     def get_queryset(self, request) -> QuerySet:
         return request.user.shopping_cart
@@ -92,14 +103,3 @@ class DownloadShoppingCartView(APIView):
         response = HttpResponse(file_content, content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename="Shopping list.txt"'
         return response
-
-
-class FavoriteView(AddRemoveRecipeView):
-    def get_queryset(self, request) -> QuerySet:
-        return request.user.favorite
-
-
-class IngredientViewSet(ReadOnlyModelViewSet):
-    queryset = models.Ingredient.objects
-    serializer_class = serializers.IngredientSerializer
-    filter_backends = (filters.NameSearchFilter,)
