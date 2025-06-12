@@ -157,5 +157,9 @@ DJOSER = {
         "user_create": "foodgram.serializers.UserCreateSerializer",
         "user": "foodgram.serializers.UserSerializer",
         "current_user": "foodgram.serializers.UserSerializer",
+    },
+    'PERMISSIONS': {
+        "user": ["rest_framework.permissions.AllowAny"],
+        "user_list": ["rest_framework.permissions.AllowAny"],
     }
 }

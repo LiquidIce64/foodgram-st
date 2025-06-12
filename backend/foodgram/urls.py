@@ -7,15 +7,13 @@ router_root = SimpleRouter()
 router_root.register('recipes', views.RecipeViewSet, basename='recipe')
 router_root.register('ingredients', views.IngredientViewSet, basename='ingredient')
 
-router_profile = SimpleRouter()
-router_profile.register('avatar', views.AvatarViewSet, basename='avatar')
-
 urlpatterns = [
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
 
     path('', include(router_root.urls)),
-    path('users/me/', include(router_profile.urls)),
+    path('users/me/', views.AvatarViewSet.as_view(
+        {'put': 'update', 'delete': 'destroy'}), name='avatar'),
 
     path('users/subscriptions/', views.SubscriptionViewSet.as_view(
         {'get': 'list'}), name='subscriptions'),
