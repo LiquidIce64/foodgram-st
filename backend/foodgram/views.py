@@ -54,13 +54,13 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
 
 
 class IngredientViewSet(ReadOnlyModelViewSet):
-    queryset = models.Ingredient.objects
+    queryset = models.Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
     filter_backends = (filters.NameSearchFilter,)
 
 
 class RecipeViewSet(ModelViewSet):
-    queryset = models.Recipe.objects
+    queryset = models.Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
     filter_backends = (filters.RecipeFilterBackend,)
 
