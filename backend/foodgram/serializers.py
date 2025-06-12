@@ -28,9 +28,10 @@ class UserSerializer(BaseUserSerializer):
         return user.subscriptions.filter(subscribed_to=obj).exists()
 
     def get_avatar(self, obj):
-        if obj.profile.avatar is None:
+        try:
+            return obj.profile.avatar.url
+        except ValueError:
             return ""
-        return obj.profile.avatar.url
 
 
 class UserCreateSerializer(BaseUserCreateSerializer):
