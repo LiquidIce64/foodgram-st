@@ -6,7 +6,7 @@ from django.db import migrations
 def load_data(apps, schema_editor):
     import json
     Ingredient = apps.get_model('foodgram', 'Ingredient')
-    data_path = '../data/ingredients.json'
+    data_path = 'foodgram/migrations/data/0002_ingredients.json'
     with open(data_path, 'r') as f:
         data = json.load(f)
         for item in data:
