@@ -57,6 +57,7 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
 class IngredientViewSet(ReadOnlyModelViewSet):
     queryset = models.Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
+    pagination_class = None
     filter_backends = (filters.NameSearchFilter,)
     permission_classes = (AllowAny,)
 
