@@ -18,6 +18,7 @@ class UserSerializer(BaseUserSerializer):
         fields = (
             'id', 'username', 'email',
             'first_name', 'last_name',
+            'is_subscribed', 'avatar',
         )
         read_only_fields = ('username',)
         required = ('email', 'first_name', 'last_name')
@@ -71,7 +72,10 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.RecipeIngredient
-        fields = ('id', 'recipe', 'amount')
+        fields = (
+            'id', 'recipe', 'amount',
+            'name', 'measurement_unit'
+        )
         write_only = ('recipe',)
         allow_empty = ('recipe',)
 
@@ -88,6 +92,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'author', 'name', 'image',
             'ingredients', 'cooking_time', 'text',
+            'is_favorited', 'is_in_shopping_cart',
         )
 
     def get_is_favorited(self, obj):
