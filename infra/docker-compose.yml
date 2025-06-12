@@ -33,6 +33,6 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - front:/usr/share/nginx/html/
-      - ../docs/:/usr/share/nginx/html/api/docs/
+      - front:/front/
+      - ../docs/:/front/api/docs/
       - media:/media/
