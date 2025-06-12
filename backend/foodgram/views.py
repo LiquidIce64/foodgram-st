@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.viewsets import (
     ModelViewSet, ReadOnlyModelViewSet,
@@ -65,6 +65,7 @@ class RecipeViewSet(ModelViewSet):
     queryset = models.Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
     filter_backends = (filters.RecipeFilterBackend,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class RecipeLinkView(APIView):
