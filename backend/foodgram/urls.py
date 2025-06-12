@@ -12,7 +12,7 @@ urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
 
     path('', include(router_root.urls)),
-    path('users/me/avatar', views.AvatarViewSet.as_view(
+    path('users/me/avatar/', views.AvatarViewSet.as_view(
         {'put': 'update', 'delete': 'destroy'}), name='avatar'),
 
     path('users/subscriptions/', views.SubscriptionViewSet.as_view(
