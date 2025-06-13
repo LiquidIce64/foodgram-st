@@ -29,7 +29,7 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = serializers.SubscriptionSerializer
 
     def get_queryset(self):
-        return self.request.user.subscriptions.select_related('subscribed_to')
+        return models.User.objects.filter(subscribers__user=self.request.user)
 
     def create(self, request, id, *args, **kwargs):
         subscribed_to = get_object_or_404(models.User, pk=id)
