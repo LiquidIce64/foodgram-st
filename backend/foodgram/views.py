@@ -118,16 +118,16 @@ class ShoppingCartView(AddRemoveRecipeView):
 
 class DownloadShoppingCartView(APIView):
     def get(self, request, *args, **kwargs):
-        shopping_cart: QuerySet = request.user.shopping_cart
+        recipes: QuerySet = request.user.shopping_cart.recipe
         ingredients = (
-            shopping_cart
-            .values(r_ing=F('recipe__ingredients'))
+            models.RecipeIngredient.objects
+            .filter(recipe__in=recipes)
             .values(
-                ing_name=F('r_ing__ingredient__name'),
-                ing_unit=F('r_ing__ingredient__measurement_unit'),
-                ing_amount=aggregates.Sum('r_ing__amount')
+                name=F('ingredient__name'),
+                unit=F('ingredient__unit'),
+                amount=aggregates.Sum('amount')
             )
-            .values_list('ing_name', 'ing_unit', 'ing_amount')
+            .values_list('name', 'unit', 'amount')
         )
 
         file_content = '\n'.join([
