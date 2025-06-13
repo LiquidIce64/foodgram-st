@@ -118,24 +118,27 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         ingredients_data = validated_data.pop('ingredients')
-        instance = super().update(instance, validated_data)
+        recipe = super().update(instance, validated_data)
 
-        ingredient_mapping = {ingredient.pk: ingredient for ingredient in instance.ingredients}
-        data_mapping = {item['id']: item for item in ingredients_data}
+        ingredient_mapping = {r_ing.ingredient.pk: r_ing for r_ing in recipe.ingredients.all()}
+        data_mapping = {data['id'].pk: data for data in ingredients_data}
 
         for ingredient_id, data in data_mapping.items():
             ingredient = ingredient_mapping.get(ingredient_id, None)
-            data['recipe'] = instance.pk
             if ingredient is None:
-                RecipeIngredientSerializer.create(**data)
+                models.RecipeIngredient.objects.create(
+                    recipe=recipe,
+                    ingredient=data['id'],
+                    amount=data['amount']
+                )
             else:
-                RecipeIngredientSerializer.update(ingredient, **data)
+                ingredient.update(amount=data['amount'])
 
         for ingredient_id, ingredient in ingredient_mapping.items():
             if ingredient_id not in data_mapping:
                 ingredient.delete()
 
-        return instance
+        return recipe
 
 
 class RecipeMinifiedSerializer(serializers.ModelSerializer):
