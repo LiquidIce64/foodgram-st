@@ -165,9 +165,9 @@ class SubscriptionSerializer(UserSerializer):
     def get_recipes(self, obj):
         limit = self.context['request'].query_params.get('recipes_limit', None)
         if limit is None:
-            recipes = obj.recipes
+            recipes = obj.recipes.all()
         else:
-            recipes = obj.recipes[:int(limit)]
+            recipes = obj.recipes.all()[:int(limit)]
         return RecipeMinifiedSerializer(instance=recipes, many=True).data
 
     def get_recipes_count(self, obj):
