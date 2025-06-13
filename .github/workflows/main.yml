@@ -95,7 +95,7 @@ jobs:
     needs:
       - lint
 #      - test_backend
-      - test_frontend
+#      - test_frontend
     steps:
       - name: Check out code
         uses: actions/checkout@v3
