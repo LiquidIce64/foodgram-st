@@ -118,7 +118,7 @@ class ShoppingCartView(AddRemoveRecipeView):
 
 class DownloadShoppingCartView(APIView):
     def get(self, request, *args, **kwargs):
-        recipes: QuerySet = request.user.shopping_cart.recipe
+        recipes = models.Recipe.objects.filter(in_shopping_carts__user=request.user)
         ingredients = (
             models.RecipeIngredient.objects
             .filter(recipe__in=recipes)
