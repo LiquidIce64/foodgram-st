@@ -63,7 +63,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(ModelViewSet):
-    queryset = models.Recipe.objects.order_by('-id')
+    queryset = models.Recipe.objects.order_by('-date_posted')
     serializer_class = serializers.RecipeSerializer
     filter_backends = (filters.RecipeFilterBackend,)
     permission_classes = (IsAuthenticatedOrReadOnly,)

@@ -17,6 +17,7 @@ class Recipe(models.Model):
     image = models.ImageField(upload_to='recipes/')
     cooking_time = models.IntegerField()
     text = models.TextField()
+    date_posted = models.DateTimeField(auto_now_add=True)
 
 
 class RecipeIngredient(models.Model):

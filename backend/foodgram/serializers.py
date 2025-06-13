@@ -164,7 +164,7 @@ class SubscriptionSerializer(UserSerializer):
 
     def get_recipes(self, obj):
         limit = self.context['request'].query_params.get('recipes_limit', None)
-        recipes = obj.recipes.order_by('-id')
+        recipes = obj.recipes.order_by('-date_posted')
         if limit is not None:
             recipes = recipes[:int(limit)]
         return RecipeMinifiedSerializer(instance=recipes, many=True).data
