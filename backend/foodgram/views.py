@@ -1,4 +1,4 @@
-from django.db.models import QuerySet, aggregates, F
+from django.db.models import QuerySet, aggregates, Q
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -119,15 +119,13 @@ class ShoppingCartView(AddRemoveRecipeView):
 class DownloadShoppingCartView(APIView):
     def get(self, request, *args, **kwargs):
         recipes = models.Recipe.objects.filter(in_shopping_carts__user=request.user)
+        filter_arg = Q(recipe_ingredients__recipe__in=recipes)
         ingredients = (
-            models.RecipeIngredient.objects
-            .filter(recipe__in=recipes)
-            .values(
-                name=F('ingredient__name'),
-                unit=F('ingredient__unit'),
-                amount=aggregates.Sum('amount')
-            )
-            .values_list('name', 'unit', 'amount')
+            models.Ingredient.objects
+            .filter(filter_arg)
+            .annotate(total_sum=aggregates.Sum(
+                'recipe_ingredients__amount', filter=filter_arg))
+            .values_list('name', 'measurement_unit', 'total_sum')
         )
 
         file_content = '\n'.join([
