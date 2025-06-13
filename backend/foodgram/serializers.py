@@ -4,7 +4,6 @@ from djoser.serializers import (
     UserSerializer as BaseUserSerializer,
     UserCreateSerializer as BaseUserCreateSerializer
 )
-from rest_framework.generics import get_object_or_404
 
 from . import models
 
@@ -151,7 +150,8 @@ class RecipeMinifiedSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(UserSerializer):
-    recipes = RecipeMinifiedSerializer(many=True)
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = models.User
@@ -159,5 +159,16 @@ class SubscriptionSerializer(UserSerializer):
             'id', 'username', 'email',
             'first_name', 'last_name',
             'is_subscribed', 'avatar',
-            'recipes',
+            'recipes', 'recipes_count',
         )
+
+    def get_recipes(self, obj):
+        limit = self.context['request'].query_params.get('recipes_limit', None)
+        if limit is None:
+            recipes = obj.recipes
+        else:
+            recipes = obj.recipes[:int(limit)]
+        return RecipeMinifiedSerializer(instance=recipes, many=True).data
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
