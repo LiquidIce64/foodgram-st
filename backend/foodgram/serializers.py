@@ -27,10 +27,9 @@ class UserSerializer(BaseUserSerializer):
         return user.is_authenticated and user.subscriptions.filter(subscribed_to=obj).exists()
 
     def get_avatar(self, obj):
-        try:
+        if obj.profile.avatar:
             return obj.profile.avatar.url
-        except ValueError:
-            return ""
+        return ""
 
 
 class UserCreateSerializer(BaseUserCreateSerializer):
@@ -97,11 +96,11 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
-        return user.favorites.filter(recipe=obj).exists()
+        return user.is_authenticated and user.favorites.filter(recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context['request'].user
-        return user.shopping_cart.filter(recipe=obj).exists()
+        return user.is_authenticated and user.shopping_cart.filter(recipe=obj).exists()
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
