@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import aggregates
 
 from . import models
 
@@ -6,9 +7,11 @@ from . import models
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     empty_value_display = '-empty-'
-    list_display = ['username', 'email', 'avatar']
+    list_display = ['username', 'email', 'avatar', 'subscribers']
     fieldsets = [(None, {'fields': ['avatar']})]
     search_fields = ('user__username', 'user__email')
+    queryset = models.User.objects.annotate(
+        subscribers_count=aggregates.Count('subscribers'))
 
     @admin.display(description='Имя пользователя')
     def username(self, obj):
@@ -17,6 +20,10 @@ class ProfileAdmin(admin.ModelAdmin):
     @admin.display(description='Адрес электронной почты')
     def email(self, obj):
         return obj.user.email
+
+    @admin.display(description='Кол-во подписчиков')
+    def subscribers(self, obj):
+        return self.queryset.get(pk=obj.user.pk).subscribers_count
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -49,12 +56,18 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
 
 @admin.register(models.Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'author_name']
+    list_display = ['name', 'author_name', 'favorites']
     search_fields = ('name', 'author__username')
+    queryset = models.Recipe.objects.annotate(
+        favorites_count=aggregates.Count('favorites'))
 
     @admin.display(description='Автор')
     def author_name(self, obj):
         return obj.author.username
+
+    @admin.display(description='Кол-во добавлений в избранное')
+    def favorites(self, obj):
+        return self.queryset.get(pk=obj.pk).favorites_count
 
 
 @admin.register(models.Favorite, models.ShoppingCartItem)
