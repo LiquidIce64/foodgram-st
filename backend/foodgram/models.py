@@ -1,8 +1,28 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.dispatch import receiver
 
 
 User = get_user_model()
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='profile')
+    avatar = models.ImageField(upload_to='users/', null=True, blank=True)
+
+
+@receiver(models.signals.post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='subscriptions')
+    subscribed_to = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='subscribers')
 
 
 class Ingredient(models.Model):
@@ -40,16 +60,3 @@ class Favorite(models.Model):
         User, on_delete=models.CASCADE, related_name='favorites')
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name='favorites')
-
-
-class Subscription(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='subscriptions')
-    subscribed_to = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='subscribers')
-
-
-class Profile(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name='profile')
-    avatar = models.ImageField(upload_to='users/', null=True, blank=True)

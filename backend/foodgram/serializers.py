@@ -41,11 +41,6 @@ class UserCreateSerializer(BaseUserCreateSerializer):
         )
         required = ('email', 'first_name', 'last_name')
 
-    def perform_create(self, validated_data):
-        user = super().perform_create(validated_data)
-        models.Profile.objects.create(user=user)
-        return user
-
 
 class AvatarSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
@@ -55,6 +50,30 @@ class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Profile
         fields = ('user', 'avatar')
+
+
+class SubscriptionSerializer(UserSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.User
+        fields = (
+            'id', 'username', 'email',
+            'first_name', 'last_name',
+            'is_subscribed', 'avatar',
+            'recipes', 'recipes_count',
+        )
+
+    def get_recipes(self, obj):
+        limit = self.context['request'].query_params.get('recipes_limit', None)
+        recipes = obj.recipes.order_by('-date_posted')
+        if limit is not None:
+            recipes = recipes[:int(limit)]
+        return RecipeMinifiedSerializer(instance=recipes, many=True).data
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -146,27 +165,3 @@ class RecipeMinifiedSerializer(serializers.ModelSerializer):
         model = models.Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
         read_only = '__all__'
-
-
-class SubscriptionSerializer(UserSerializer):
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.User
-        fields = (
-            'id', 'username', 'email',
-            'first_name', 'last_name',
-            'is_subscribed', 'avatar',
-            'recipes', 'recipes_count',
-        )
-
-    def get_recipes(self, obj):
-        limit = self.context['request'].query_params.get('recipes_limit', None)
-        recipes = obj.recipes.order_by('-date_posted')
-        if limit is not None:
-            recipes = recipes[:int(limit)]
-        return RecipeMinifiedSerializer(instance=recipes, many=True).data
-
-    def get_recipes_count(self, obj):
-        return obj.recipes.count()
