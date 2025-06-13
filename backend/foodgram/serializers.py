@@ -25,7 +25,7 @@ class UserSerializer(BaseUserSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context['request'].user
-        return user.subscriptions.filter(subscribed_to=obj).exists()
+        return user.is_authenticated and user.subscriptions.filter(subscribed_to=obj).exists()
 
     def get_avatar(self, obj):
         try:
