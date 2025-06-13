@@ -15,8 +15,8 @@ urlpatterns = [
     path('users/me/avatar/', views.AvatarViewSet.as_view(
         {'put': 'update', 'delete': 'destroy'}), name='avatar'),
 
-    path('users/subscriptions/', views.SubscriptionView.as_view(
-        {'get': 'list'}), name='subscriptions'),
+    path('users/subscriptions/',
+         views.SubscriptionView.as_view(), name='subscriptions'),
     path('users/<id>/subscribe/',
          views.SubscribeView.as_view(), name='subscribe'),
 

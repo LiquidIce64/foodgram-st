@@ -25,11 +25,11 @@ class AvatarViewSet(
         return self.request.user.profile
 
 
-class SubscriptionView(mixins.ListModelMixin, GenericViewSet):
-    serializer_class = serializers.SubscriptionSerializer
-
-    def get_queryset(self):
-        return models.User.objects.filter(subscribers__user=self.request.user)
+class SubscriptionView(APIView):
+    def get(self, request, *args, **kwargs):
+        queryset = models.User.objects.filter(subscribers__user=request.user)
+        serializer = serializers.SubscriptionSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class SubscribeView(APIView):
