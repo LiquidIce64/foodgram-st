@@ -29,7 +29,7 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = serializers.SubscriptionSerializer
 
     def get_queryset(self):
-        return models.User.objects.filter(subscribers__user=self.request.user)
+        return models.User.objects.filter(subscribers__user=self.request.user).order_by('id')
 
     def create(self, request, id, *args, **kwargs):
         subscribed_to = get_object_or_404(models.User, pk=id)
@@ -63,7 +63,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(ModelViewSet):
-    queryset = models.Recipe.objects.all()
+    queryset = models.Recipe.objects.order_by('-id')
     serializer_class = serializers.RecipeSerializer
     filter_backends = (filters.RecipeFilterBackend,)
     permission_classes = (IsAuthenticatedOrReadOnly,)
