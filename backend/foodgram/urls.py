@@ -8,9 +8,6 @@ router_root.register('recipes', views.RecipeViewSet, basename='recipe')
 router_root.register('ingredients', views.IngredientViewSet, basename='ingredient')
 
 urlpatterns = [
-    path('', include('djoser.urls')),
-    path('auth/', include('djoser.urls.authtoken')),
-
     path('', include(router_root.urls)),
     path('users/me/avatar/', views.AvatarViewSet.as_view(
         {'put': 'update', 'delete': 'destroy'}), name='avatar'),
@@ -28,4 +25,7 @@ urlpatterns = [
          views.ShoppingCartView.as_view(), name='shopping_cart'),
     path('recipes/download_shopping_cart/',
          views.DownloadShoppingCartView.as_view(), name='download_shopping_cart'),
+
+    path('', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
 ]
