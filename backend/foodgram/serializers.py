@@ -109,11 +109,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         validated_data['author'] = self.context['request'].user
         recipe = models.Recipe.objects.create(**validated_data)
         for ingredient_data in ingredients_data:
-            ingredient = get_object_or_404(models.Ingredient, pk=ingredient_data['id'])
+            ingredient = get_object_or_404(models.Ingredient, pk=int(ingredient_data['id']))
             models.RecipeIngredient.objects.create(
                 recipe=recipe,
                 ingredient=ingredient,
-                amount=ingredient_data['amount']
+                amount=int(ingredient_data['amount'])
             )
         return recipe
 
