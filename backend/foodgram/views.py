@@ -70,6 +70,8 @@ class RecipeViewSet(ModelViewSet):
 
 
 class RecipeLinkView(APIView):
+    permission_classes = (AllowAny,)
+
     def get(self, request, id, *args, **kwargs):
         get_object_or_404(models.Recipe, pk=id)
         return Response({
