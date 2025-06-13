@@ -108,7 +108,7 @@ class AddRemoveRecipeView(APIView):
 
 class FavoriteView(AddRemoveRecipeView):
     def get_queryset(self, request) -> QuerySet:
-        return request.user.favorite
+        return request.user.favorites
 
 
 class ShoppingCartView(AddRemoveRecipeView):
