@@ -75,7 +75,7 @@ class RecipeLinkView(APIView):
     def get(self, request, id, *args, **kwargs):
         get_object_or_404(models.Recipe, pk=id)
         return Response({
-            'short-link': reverse('short-link', id=id, request=request)
+            'short-link': reverse('short-link', args=(id,), request=request)
         })
 
 
