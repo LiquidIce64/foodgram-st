@@ -23,5 +23,5 @@ urlpatterns = [
     path('api/', include('foodgram.urls')),
 
     # Stub view to add a path to use for reversing
-    path('s/<id>', View.as_view(), name='short-link'),
+    path('s/<id>/', View.as_view(), name='short-link'),
 ]
