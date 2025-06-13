@@ -7,8 +7,10 @@ def param_equals(request, param, value):
 
 def param_get_id(request, param):
     value = request.query_params.get(param, '')
-    try: return int(value)
-    except ValueError: return None
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 
 class RecipeFilterBackend(BaseFilterBackend):

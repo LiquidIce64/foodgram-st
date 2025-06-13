@@ -38,7 +38,8 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
             subscribed_to == self.request.user or
             self.request.user.subscriptions.filter(
                 subscribed_to=subscribed_to).exists()
-        ): return Response(status=status.HTTP_400_BAD_REQUEST)
+        ):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         instance = models.Subscription.objects.create(
             user=request.user, subscribed_to=subscribed_to)
