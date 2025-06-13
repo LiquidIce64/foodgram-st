@@ -42,7 +42,7 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
 
         instance = models.Subscription.objects.create(
             user=request.user, subscribed_to=subscribed_to)
-        serializer = self.get_serializer(instance=instance)
+        serializer = self.get_serializer(instance=instance.subscribed_to)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, id, *args, **kwargs):
