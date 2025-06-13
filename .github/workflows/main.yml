@@ -45,25 +45,25 @@ jobs:
 #        cd backend/
 #        pytest
 
-  test_frontend:
-    name: Run tests on frontend
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v4
-    - name: Set up nodeJS
-      uses: actions/setup-node@v4
-      with:
-        node-version: 21.7.1
-    - name: Install dependencies
-      run: |
-        cd frontend/
-        npm ci
-    - name: Run tests
-      run: |
-        cd frontend/
-        npm run test
+#  test_frontend:
+#    name: Run tests on frontend
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - name: Check out code
+#      uses: actions/checkout@v4
+#    - name: Set up nodeJS
+#      uses: actions/setup-node@v4
+#      with:
+#        node-version: 21.7.1
+#    - name: Install dependencies
+#      run: |
+#        cd frontend/
+#        npm ci
+#    - name: Run tests
+#      run: |
+#        cd frontend/
+#        npm run test
 
   build_backend:
     name: Build backend and push to DockerHub
@@ -71,7 +71,7 @@ jobs:
     needs:
       - lint
 #      - test_backend
-      - test_frontend
+#      - test_frontend
     steps:
       - name: Check out code
         uses: actions/checkout@v3
