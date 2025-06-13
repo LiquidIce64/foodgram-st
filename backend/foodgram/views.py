@@ -25,13 +25,15 @@ class AvatarViewSet(
         return self.request.user.profile
 
 
-class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
+class SubscriptionView(mixins.ListModelMixin, GenericViewSet):
     serializer_class = serializers.SubscriptionSerializer
 
     def get_queryset(self):
         return models.User.objects.filter(subscribers__user=self.request.user)
 
-    def create(self, request, id, *args, **kwargs):
+
+class SubscribeView(APIView):
+    def post(self, request, id, *args, **kwargs):
         subscribed_to = get_object_or_404(models.User, pk=id)
 
         if (
@@ -45,7 +47,7 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
         serializer = self.get_serializer(instance=instance.subscribed_to)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def destroy(self, request, id, *args, **kwargs):
+    def delete(self, request, id, *args, **kwargs):
         subscribed_to = get_object_or_404(models.User, pk=id)
         queryset = request.user.subscriptions.filter(subscribed_to=subscribed_to)
         if not queryset.exists():

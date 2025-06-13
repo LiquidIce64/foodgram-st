@@ -15,10 +15,10 @@ urlpatterns = [
     path('users/me/avatar/', views.AvatarViewSet.as_view(
         {'put': 'update', 'delete': 'destroy'}), name='avatar'),
 
-    path('users/subscriptions/', views.SubscriptionViewSet.as_view(
+    path('users/subscriptions/', views.SubscriptionView.as_view(
         {'get': 'list'}), name='subscriptions'),
-    path('users/<id>/subscribe/', views.SubscriptionViewSet.as_view(
-        {'post': 'create', 'delete': 'destroy'}), name='subscribe'),
+    path('users/<id>/subscribe/',
+         views.SubscribeView.as_view(), name='subscribe'),
 
     path('recipes/<id>/get-link/',
          views.RecipeLinkView.as_view(), name='get-short-link'),
