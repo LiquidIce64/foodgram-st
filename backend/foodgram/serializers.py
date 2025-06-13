@@ -4,7 +4,7 @@ from djoser.serializers import (
     UserSerializer as BaseUserSerializer,
     UserCreateSerializer as BaseUserCreateSerializer
 )
-
+from rest_framework.generics import get_object_or_404
 
 from . import models
 
@@ -109,9 +109,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         validated_data['author'] = self.context['request'].user
         recipe = models.Recipe.objects.create(**validated_data)
         for ingredient_data in ingredients_data:
-            ingredient_data['recipe'] = recipe.pk
-            ingredient_data['ingredient'] = ingredient_data.pop('id')
-            RecipeIngredientSerializer.create(**ingredient_data)
+            ingredient = get_object_or_404(models.Ingredient, pk=ingredient_data['id'])
+            models.RecipeIngredient.objects.create(
+                recipe=recipe,
+                ingredient=ingredient,
+                amount=ingredient_data['amount']
+            )
         return recipe
 
     def update(self, instance, validated_data):
