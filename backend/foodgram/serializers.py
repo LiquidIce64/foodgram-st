@@ -152,3 +152,12 @@ class RecipeMinifiedSerializer(serializers.ModelSerializer):
 
 class SubscriptionSerializer(UserSerializer):
     recipes = RecipeMinifiedSerializer(many=True)
+
+    class Meta:
+        model = models.User
+        fields = (
+            'id', 'username', 'email',
+            'first_name', 'last_name',
+            'is_subscribed', 'avatar',
+            'recipes',
+        )
