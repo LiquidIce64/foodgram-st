@@ -1,4 +1,4 @@
-from django.db.models import QuerySet, aggregates
+from django.db.models import QuerySet, aggregates, F
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -121,10 +121,10 @@ class DownloadShoppingCartView(APIView):
         shopping_cart: QuerySet = request.user.shopping_cart
         ingredients = (
             shopping_cart
-            .values(r_ing='recipe__ingredients')
+            .values(r_ing=F('recipe__ingredients'))
             .values(
-                ing_name='r_ing__ingredient__name',
-                ing_unit='r_ing__ingredient__measurement_unit',
+                ing_name=F('r_ing__ingredient__name'),
+                ing_unit=F('r_ing__ingredient__measurement_unit'),
                 ing_amount=aggregates.Sum('r_ing__amount')
             )
             .values_list('ing_name', 'ing_unit', 'ing_amount')
