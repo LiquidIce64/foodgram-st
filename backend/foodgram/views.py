@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.viewsets import (
     ModelViewSet, ReadOnlyModelViewSet,
@@ -29,15 +29,22 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = serializers.SubscriptionSerializer
 
     def get_queryset(self):
-        return models.User.objects.filter(subscribers__user=self.request.user).order_by('id')
+        return (
+            models.User.objects
+            .filter(subscribers__user=self.request.user)
+            .order_by('id')
+        )
 
     def create(self, request, id, *args, **kwargs):
         subscribed_to = get_object_or_404(models.User, pk=id)
+        queryset = (
+            request.user.subscriptions
+            .filter(subscribed_to=subscribed_to)
+        )
 
         if (
-            subscribed_to == self.request.user or
-            self.request.user.subscriptions.filter(
-                subscribed_to=subscribed_to).exists()
+            subscribed_to == self.request.user
+            or queryset.exists()
         ):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -48,9 +55,14 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
 
     def destroy(self, request, id, *args, **kwargs):
         subscribed_to = get_object_or_404(models.User, pk=id)
-        queryset = request.user.subscriptions.filter(subscribed_to=subscribed_to)
+        queryset = (
+            request.user.subscriptions
+            .filter(subscribed_to=subscribed_to)
+        )
+
         if not queryset.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
         queryset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -119,8 +131,11 @@ class ShoppingCartView(AddRemoveRecipeView):
 
 class DownloadShoppingCartView(APIView):
     def get(self, request, *args, **kwargs):
-        recipes = models.Recipe.objects.filter(in_shopping_carts__user=request.user)
+        recipes = models.Recipe.objects.filter(
+            in_shopping_carts__user=request.user)
+
         filter_arg = Q(recipe_ingredients__recipe__in=recipes)
+
         ingredients = (
             models.Ingredient.objects
             .filter(filter_arg)
@@ -135,5 +150,7 @@ class DownloadShoppingCartView(APIView):
         ])
 
         response = HttpResponse(file_content, content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename="Shopping list.txt"'
+        response['Content-Disposition'] = (
+            'attachment; filename="Shopping list.txt"'
+        )
         return response

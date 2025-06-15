@@ -4,8 +4,10 @@ from rest_framework.routers import SimpleRouter
 from . import views
 
 router_root = SimpleRouter()
-router_root.register('recipes', views.RecipeViewSet, basename='recipe')
-router_root.register('ingredients', views.IngredientViewSet, basename='ingredient')
+router_root.register(
+    'recipes', views.RecipeViewSet, basename='recipe')
+router_root.register(
+    'ingredients', views.IngredientViewSet, basename='ingredient')
 
 urlpatterns = [
     path('users/me/avatar/', views.AvatarViewSet.as_view(
@@ -16,7 +18,8 @@ urlpatterns = [
         {'post': 'create', 'delete': 'destroy'}), name='subscribe'),
 
     path('recipes/download_shopping_cart/',
-         views.DownloadShoppingCartView.as_view(), name='download_shopping_cart'),
+         views.DownloadShoppingCartView.as_view(),
+         name='download_shopping_cart'),
     path('recipes/<id>/get-link/',
          views.RecipeLinkView.as_view(), name='get-short-link'),
     path('recipes/<id>/favorite/',

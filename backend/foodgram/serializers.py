@@ -24,7 +24,10 @@ class UserSerializer(BaseUserSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context['request'].user
-        return user.is_authenticated and user.subscriptions.filter(subscribed_to=obj).exists()
+        return (
+            user.is_authenticated
+            and user.subscriptions.filter(subscribed_to=obj).exists()
+        )
 
     def get_avatar(self, obj):
         if obj.profile.avatar:
@@ -115,11 +118,17 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
-        return user.is_authenticated and user.favorites.filter(recipe=obj).exists()
+        return (
+            user.is_authenticated
+            and user.favorites.filter(recipe=obj).exists()
+        )
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context['request'].user
-        return user.is_authenticated and user.shopping_cart.filter(recipe=obj).exists()
+        return (
+            user.is_authenticated
+            and user.shopping_cart.filter(recipe=obj).exists()
+        )
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
@@ -128,7 +137,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         for ingredient_data in ingredients_data:
             models.RecipeIngredient.objects.create(
                 recipe=recipe,
-                ingredient=ingredient_data['id'],  # Since id is a PKRelatedField, this is an Ingredient object
+                # Since id is a PKRelatedField, this is an Ingredient object
+                ingredient=ingredient_data['id'],
                 amount=ingredient_data['amount']
             )
         return recipe
@@ -137,8 +147,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients_data = validated_data.pop('ingredients')
         recipe = super().update(instance, validated_data)
 
-        ingredient_mapping = {r_ing.ingredient.pk: r_ing for r_ing in recipe.ingredients.all()}
-        data_mapping = {data['id'].pk: data for data in ingredients_data}
+        ingredient_mapping = {
+            r_ing.ingredient.pk: r_ing
+            for r_ing in recipe.ingredients.all()
+        }
+        data_mapping = {
+            data['id'].pk: data
+            for data in ingredients_data
+        }
 
         for ingredient_id, data in data_mapping.items():
             ingredient = ingredient_mapping.get(ingredient_id, None)

@@ -22,6 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('foodgram.urls')),
 
-    path('recipes/<id>', View.as_view(), name='short-link-redirect'),  # Stub view for registering the url only
-    path('s/<id>', RedirectView.as_view(pattern_name='short-link-redirect'), name='short-link'),
+    # Stub view for registering the url only
+    path('recipes/<id>', View.as_view(), name='short-link-redirect'),
+    path('s/<id>', RedirectView.as_view(
+        pattern_name='short-link-redirect'), name='short-link'),
 ]
