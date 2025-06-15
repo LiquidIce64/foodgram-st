@@ -150,6 +150,8 @@ REST_FRAMEWORK = {
 
     'DEFAULT_PAGINATION_CLASS': 'foodgram.pagination.PageNumberLimitPagination',
     'PAGE_SIZE': 10,
+
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
 
 DJOSER = {
@@ -159,6 +161,7 @@ DJOSER = {
         "user": "foodgram.serializers.UserSerializer",
         "current_user": "foodgram.serializers.UserSerializer",
     },
+    'HIDE_USERS': False,
     'PERMISSIONS': {
         "user": ["rest_framework.permissions.AllowAny"],
         "user_list": ["rest_framework.permissions.AllowAny"],
