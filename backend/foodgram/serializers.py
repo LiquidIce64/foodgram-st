@@ -44,6 +44,14 @@ class UserCreateSerializer(BaseUserCreateSerializer):
         )
         required = ('email', 'first_name', 'last_name')
 
+    def validate(self, attrs):
+        email = attrs.get('email')
+        if models.User.objects.filter(email=email).exists():
+            raise serializers.ValidationError(
+                {'email': 'email is already in use'}
+            )
+        return super().validate(attrs)
+
 
 class AvatarSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
