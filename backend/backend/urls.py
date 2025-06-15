@@ -16,12 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import View
+from django.views.generic import RedirectView, View
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('foodgram.urls')),
 
-    # Stub view to add a path to use for reversing
-    path('s/<id>', View.as_view(), name='short-link'),
+    path('recipes/<id>', View.as_view(), name='short-link-redirect'),  # Stub view for registering the url only
+    path('s/<id>', RedirectView.as_view(pattern_name='short-link-redirect'), name='short-link'),
 ]
