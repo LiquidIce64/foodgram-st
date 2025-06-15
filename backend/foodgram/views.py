@@ -11,7 +11,7 @@ from rest_framework.viewsets import (
     GenericViewSet, mixins
 )
 
-from . import models, serializers, filters
+from . import models, serializers, filters, permissions
 
 
 class AvatarViewSet(
@@ -67,7 +67,7 @@ class RecipeViewSet(ModelViewSet):
     queryset = models.Recipe.objects.order_by('-date_posted')
     serializer_class = serializers.RecipeSerializer
     filter_backends = (filters.RecipeFilterBackend,)
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AdminAuthorOrReadOnly,)
 
 
 class RecipeLinkView(APIView):
