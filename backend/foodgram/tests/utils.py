@@ -33,6 +33,11 @@ class APIResponseTestCase(APITestCase):
                 status.HTTP_400_BAD_REQUEST,
                 login_as=login_as)
 
+    def assert_json_structure(self, data, expected_structure):
+        for key, expected_type in expected_structure.items():
+            self.assertIn(key, data)
+            self.assertIsInstance(data[key], expected_type)
+
 
 def create_user(username):
     user = models.User(
