@@ -108,8 +108,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    "djoser.auth_backends.LoginFieldBackend",
-    "django.contrib.auth.backends.ModelBackend",
+    'djoser.auth_backends.LoginFieldBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 # Internationalization
@@ -157,13 +157,13 @@ REST_FRAMEWORK = {
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'SERIALIZERS': {
-        "user_create": "foodgram.serializers.UserCreateSerializer",
-        "user": "foodgram.serializers.UserSerializer",
-        "current_user": "foodgram.serializers.UserSerializer",
+        'user_create': 'foodgram.serializers.UserCreateSerializer',
+        'user': 'foodgram.serializers.UserSerializer',
+        'current_user': 'foodgram.serializers.UserSerializer',
     },
     'HIDE_USERS': False,
     'PERMISSIONS': {
-        "user": ["rest_framework.permissions.AllowAny"],
-        "user_list": ["rest_framework.permissions.AllowAny"],
+        'user': ['foodgram.permissions.UserViewSetPermission'],
+        'user_list': ['rest_framework.permissions.AllowAny'],
     }
 }

@@ -30,19 +30,23 @@ class UserSerializer(BaseUserSerializer):
         )
 
     def get_avatar(self, obj):
-        if obj.profile.avatar:
+        try:
             return obj.profile.avatar.url
-        return ""
+        except Exception:
+            return ''
 
 
 class UserCreateSerializer(BaseUserCreateSerializer):
+    email = serializers.EmailField()
+    first_name = serializers.CharField(max_length=150)
+    last_name = serializers.CharField(max_length=150)
+
     class Meta:
         model = models.User
         fields = (
             'id', 'username', 'password', 'email',
             'first_name', 'last_name',
         )
-        required = ('email', 'first_name', 'last_name')
         read_only_fields = ('id',)
 
     def validate(self, attrs):

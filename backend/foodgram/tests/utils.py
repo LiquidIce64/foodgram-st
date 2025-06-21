@@ -8,8 +8,11 @@ class APIResponseTestCase(APITestCase):
     def assert_response(
         self, url, method='get', data=None,
         expected_status=status.HTTP_200_OK,
-        expected_data=None
+        expected_data=None,
+        login_as=None,
     ):
+        if login_as is not None:
+            self.client.force_authenticate(login_as)
         func = getattr(self.client, method)
         if data is None:
             response = func(url)
@@ -21,15 +24,27 @@ class APIResponseTestCase(APITestCase):
                 self.assertEqual(response.data.get(k), v)
         return response
 
+    def assert_invalid_data(self, url, data, method='post', login_as=None):
+        for key in data.keys():
+            test_data = data.copy()
+            test_data.pop(key)
+            self.assert_response(
+                url, method, test_data,
+                status.HTTP_400_BAD_REQUEST,
+                login_as=login_as)
+
 
 def create_user(username):
-    return models.User.objects.create(
+    user = models.User(
         email=f'{username}@example.com',
         username=username,
         first_name='test',
         last_name='user',
-        password='foodgram_test'
+        is_active=True
     )
+    user.set_password('foodgram_test')
+    user.save()
+    return user
 
 
 def get_user_json_short(id=None, username=None, user=None):
