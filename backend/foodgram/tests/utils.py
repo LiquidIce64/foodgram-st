@@ -65,10 +65,12 @@ def get_user_json_short(id=None, username=None, user=None):
     }
 
 
-def get_user_json(id=None, username=None, user=None, subscribed=False, avatar=''):
+def get_user_json(id=None, username=None, user=None,
+                  subscribed=False, avatar='', **kwargs):
     res = get_user_json_short(id, username, user)
     res.update(
         is_subscribed=subscribed,
-        avatar=avatar
+        avatar=avatar,
+        **kwargs
     )
     return res

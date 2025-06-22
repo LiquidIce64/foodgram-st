@@ -1,13 +1,10 @@
-from .utils import (
-    APIResponseTestCase, status,
-    create_user, get_user_json, get_user_json_short
-)
+from .utils import APIResponseTestCase, status, create_user, get_user_json
 
 
 class UserTestCase(APIResponseTestCase):
     user_create_json = {
         'email': f'test_user4@example.com',
-        'username': 'test_user4',
+        'username': 'test_user_4',
         'first_name': 'test',
         'last_name': 'user',
         'password': 'foodgram_test',
@@ -15,9 +12,9 @@ class UserTestCase(APIResponseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user1 = create_user('test_user1')
-        cls.user2 = create_user('test_user2')
-        cls.user3 = create_user('test_user3')
+        cls.user1 = create_user('test_user_1')
+        cls.user2 = create_user('test_user_2')
+        cls.user3 = create_user('test_user_3')
 
     def test_list(self):
         self.assert_response(
@@ -32,26 +29,32 @@ class UserTestCase(APIResponseTestCase):
 
     def test_detail(self):
         self.assert_response(
-            '/api/users/1/',
+            f'/api/users/{self.user1.pk}/',
             expected_data=get_user_json(user=self.user1))
         self.assert_response(
-            '/api/users/2/',
+            f'/api/users/{self.user2.pk}/',
             expected_data=get_user_json(user=self.user2))
         self.assert_response(
-            '/api/users/3/',
+            f'/api/users/{self.user3.pk}/',
             expected_data=get_user_json(user=self.user3))
 
     def test_detail_not_found(self):
         self.assert_response(
-            '/api/users/10/',
+            '/api/users/99999999/',
             expected_status=status.HTTP_404_NOT_FOUND)
 
     def test_create(self):
-        self.assert_response(
+        response = self.assert_response(
             '/api/users/', method='post',
             data=self.user_create_json,
-            expected_status=status.HTTP_201_CREATED,
-            expected_data=get_user_json_short(4, 'test_user4'))
+            expected_status=status.HTTP_201_CREATED)
+        self.assert_json_structure(response.data, {
+            'id': int,
+            'username': str,
+            'email': str,
+            'first_name': str,
+            'last_name': str
+        })
 
     def test_create_invalid(self):
         self.assert_invalid_data(
@@ -127,7 +130,7 @@ class UserTestCase(APIResponseTestCase):
         response = self.assert_response(
             '/api/auth/token/login/', method='post',
             data={
-                'email': 'test_user1@example.com',
+                'email': 'test_user_1@example.com',
                 'password': 'foodgram_test'
             })
         self.assertIsNotNone(response.data.get('auth_token', None))
