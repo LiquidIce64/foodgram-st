@@ -48,13 +48,13 @@ jobs:
         postgres-version: "17"
     - name: Apply migrations
       env:
-        POSTGRES_PASSWORD=foodgram
+        POSTGRES_PASSWORD: foodgram
       run: |
         cd backend/
         python manage.py migrate
     - name: Run tests
       env:
-        POSTGRES_PASSWORD=foodgram
+        POSTGRES_PASSWORD: foodgram
       run: |
         cd backend/
         python manage.py test
@@ -147,8 +147,8 @@ jobs:
 #      - name: Executing remote ssh commands to deploy
 #        uses: appleboy/ssh-action@master
 #        env:
-#          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-#          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+#          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+#          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 #        with:
 #          host: ${{ secrets.HOST }}
 #          username: ${{ secrets.USER }}
