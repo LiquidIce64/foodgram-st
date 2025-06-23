@@ -5,7 +5,7 @@ from .utils import (
 from . import structs
 
 
-def get_detail_url(user_id):
+def get_user_url(user_id):
     return f'/api/users/{user_id}/'
 
 
@@ -49,18 +49,18 @@ class UserTestCase(APIResponseTestCase):
 
     def test_detail(self):
         self.assert_response(
-            get_detail_url(self.user1.pk),
+            get_user_url(self.user1.pk),
             expected_data=get_user_json(user=self.user1))
         self.assert_response(
-            get_detail_url(self.user2.pk),
+            get_user_url(self.user2.pk),
             expected_data=get_user_json(user=self.user2))
         self.assert_response(
-            get_detail_url(self.user3.pk),
+            get_user_url(self.user3.pk),
             expected_data=get_user_json(user=self.user3))
 
     def test_detail_not_found(self):
         self.assert_response(
-            get_detail_url(99999999),
+            get_user_url(99999999),
             expected_status=status.HTTP_404_NOT_FOUND)
 
     def test_create(self):

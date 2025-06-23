@@ -105,7 +105,8 @@ class AddRemoveRecipeView(APIView):
         queryset.create(
             user=request.user, recipe=recipe)
 
-        serializer = serializers.RecipeMinifiedSerializer(instance=recipe)
+        serializer = serializers.RecipeMinifiedSerializer(
+            instance=recipe, context={'request': self.request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, id, *args, **kwargs):

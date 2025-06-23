@@ -7,7 +7,7 @@ def load_data(apps, schema_editor):
     import json
     Ingredient = apps.get_model('foodgram', 'Ingredient')
     data_path = 'foodgram/migrations/data/0002_ingredients.json'
-    with open(data_path, 'r') as f:
+    with open(data_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
         for item in data:
             instance = Ingredient(**item)
