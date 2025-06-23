@@ -1,10 +1,11 @@
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, override_settings, settings
 from drf_extra_fields.fields import Base64ImageField
 
 from foodgram import models
 
 
+@override_settings(MEDIA_ROOT=settings.BASE_DIR / 'test_media')
 class APIResponseTestCase(APITestCase):
     def assert_response(
         self, url, method='get',
