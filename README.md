@@ -1,5 +1,8 @@
 # Инструкция по установке
-Находясь в папке production, выполните команды:\
+
+Находясь в папке production, создайте по примеру .env.example файл .env, заполнив имя пользователя и пароль для базы данных.
+
+Далее, выполните команды:\
 ```sudo docker compose -f docker-compose.production.yml pull```\
 ```sudo docker compose -f docker-compose.production.yml up -d```
 

@@ -1,6 +1,7 @@
 backend/test_media
 frontend/node_modules
 frontend/build
+production/.env
 .env
 
 # Byte-compiled / optimized / DLL files
