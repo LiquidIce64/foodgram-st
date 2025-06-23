@@ -86,7 +86,7 @@ class SubscriptionSerializer(UserSerializer):
         recipes = obj.recipes.order_by('-date_posted')
         if limit is not None:
             recipes = recipes[:int(limit)]
-        return RecipeMinifiedSerializer(instance=recipes, many=True).data
+        return RecipeMinifiedSerializer(instance=recipes, many=True, context=self.context).data
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()

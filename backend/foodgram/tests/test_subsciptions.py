@@ -1,4 +1,7 @@
-from .utils import APIResponseTestCase, status, create_user, get_user_json
+from .utils import (
+    APIResponseTestCase, status,
+    create_user, create_recipe, get_user_json, get_recipe_json_short
+)
 
 
 def get_subscribe_url(user_id):
@@ -16,6 +19,8 @@ class SubscriptionTestCase(APIResponseTestCase):
         cls.user3 = create_user('test_sub_user_3')
         cls.user1.subscriptions.create(user=cls.user1, subscribed_to=cls.user2)
         cls.user1.subscriptions.create(user=cls.user1, subscribed_to=cls.user3)
+        cls.recipe1 = create_recipe('test_sub_recipe_1', cls.user2)
+        cls.recipe2 = create_recipe('test_sub_recipe_2', cls.user2)
 
     def test_list(self):
         self.assert_response(
@@ -26,8 +31,11 @@ class SubscriptionTestCase(APIResponseTestCase):
                     get_user_json(
                         user=self.user2,
                         subscribed=True,
-                        recipes_count=0,
-                        recipes=[]),
+                        recipes_count=2,
+                        recipes=[
+                            get_recipe_json_short(self.recipe2),
+                            get_recipe_json_short(self.recipe1)
+                        ]),
                     get_user_json(
                         user=self.user3,
                         subscribed=True,
@@ -35,6 +43,12 @@ class SubscriptionTestCase(APIResponseTestCase):
                         recipes=[])
                 ]
             })
+
+    def test_list_recipe_limit(self):
+        response = self.assert_response(
+            URL_SUBSCRIPTIONS + '?recipes_limit=1',
+            login_as=self.user1)
+        self.assertEqual(response.data['results'][0]['recipes'], [get_recipe_json_short(self.recipe2)])
 
     def test_list_no_auth(self):
         self.assert_response(
