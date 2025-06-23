@@ -57,8 +57,16 @@ class SubscriptionTestCase(APIResponseTestCase):
             login_as=self.user1,
             expected_data={
                 'count': 3,
-                'next': 'http://testserver' + URL_SUBSCRIPTIONS + '?limit=1&page=3',
-                'previous': 'http://testserver' + URL_SUBSCRIPTIONS + '?limit=1',
+                'next': (
+                    'http://testserver'
+                    + URL_SUBSCRIPTIONS
+                    + '?limit=1&page=3'
+                ),
+                'previous': (
+                    'http://testserver'
+                    + URL_SUBSCRIPTIONS
+                    + '?limit=1'
+                ),
                 'results': [
                     get_user_json(
                         user=self.user3,
@@ -72,7 +80,9 @@ class SubscriptionTestCase(APIResponseTestCase):
         response = self.assert_response(
             URL_SUBSCRIPTIONS + '?recipes_limit=1',
             login_as=self.user1)
-        self.assertEqual(response.data['results'][0]['recipes'], [get_recipe_json_short(self.recipe2)])
+        self.assertEqual(
+            response.data['results'][0]['recipes'],
+            [get_recipe_json_short(self.recipe2)])
 
     def test_list_no_auth(self):
         self.assert_response(
@@ -93,8 +103,8 @@ class SubscriptionTestCase(APIResponseTestCase):
 
     def test_subscribe_recipe_limit(self):
         self.assert_response(
-            get_subscribe_url(self.user2.pk) + '?recipes_limit=1', method='post',
-            login_as=self.user3,
+            get_subscribe_url(self.user2.pk) + '?recipes_limit=1',
+            method='post', login_as=self.user3,
             expected_status=status.HTTP_201_CREATED,
             expected_data={
                 'recipes': [get_recipe_json_short(self.recipe2)]

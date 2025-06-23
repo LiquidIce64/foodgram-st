@@ -19,4 +19,7 @@ class AdminAuthorOrReadOnly(permissions.BasePermission):
 
 class UserViewSetPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.path != reverse('user-me') or request.user.is_authenticated
+        return (
+            request.path != reverse('user-me')
+            or request.user.is_authenticated
+        )

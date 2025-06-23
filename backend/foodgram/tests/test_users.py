@@ -17,7 +17,7 @@ URL_LOGIN = '/api/auth/token/login/'
 URL_LOGOUT = '/api/auth/token/logout/'
 
 USER_CREATE_DATA = {
-    'email': f'test_user4@example.com',
+    'email': 'test_user4@example.com',
     'username': 'test_user_4',
     'first_name': 'test',
     'last_name': 'user',
@@ -100,7 +100,9 @@ class UserTestCase(APIResponseTestCase):
             URL_AVATAR, method='put',
             login_as=self.user1,
             data=AVATAR_CREATE_DATA)
-        self.assertRegex(response.data.get('avatar'), r'https?:\/\/[^\/]+\/media\/users\/.*\..*')
+        self.assertRegex(
+            response.data.get('avatar'),
+            r'https?:\/\/[^\/]+\/media\/users\/.*\..*')
 
     def test_avatar_invalid(self):
         self.assert_response(

@@ -131,8 +131,8 @@ def get_ingredient_json(ingredient=None, id=None, **kwargs):
 
 def get_recipe_json_short(recipe):
     image = (
-        'http://testserver' +
-        Base64ImageField().to_representation(recipe.image)
+        'http://testserver'
+        + Base64ImageField().to_representation(recipe.image)
     )
     return {
         'id': recipe.pk,

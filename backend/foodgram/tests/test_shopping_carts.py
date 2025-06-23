@@ -73,7 +73,9 @@ class FavoritesTestCase(APIResponseTestCase):
         response = self.assert_response(
             URL_DOWNLOAD_CART,
             login_as=self.user2)
-        self.assertEqual(response.content.decode(), 'абрикосовое варенье (г) - 2')
+        self.assertEqual(
+            response.content.decode(),
+            'абрикосовое варенье (г) - 2')
 
     def test_download_cart_no_auth(self):
         self.assert_response(
