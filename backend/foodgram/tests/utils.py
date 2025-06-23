@@ -15,8 +15,7 @@ class APIResponseTestCase(APITestCase):
         expected_data=None,
         debug_log=False
     ):
-        if login_as is not None:
-            self.client.force_authenticate(login_as)
+        self.client.force_authenticate(login_as)
         func = getattr(self.client, method)
         if data is None:
             response = func(url)

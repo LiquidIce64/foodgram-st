@@ -67,6 +67,38 @@ class SubscriptionTestCase(APIResponseTestCase):
                 ]
             })
 
+    def test_list_pagination(self):
+        self.assert_response(
+            URL_RECIPES + '?limit=1&page=2',
+            expected_data={
+                'count': 3,
+                'next': 'http://testserver' + URL_RECIPES + '?limit=1&page=3',
+                'previous': 'http://testserver' + URL_RECIPES + '?limit=1',
+                'results': [get_recipe_json(self.recipe2)]
+            })
+
+    def test_list_filters(self):
+        self.assert_response(
+            URL_RECIPES + '?is_favorited=1',
+            login_as=self.user1,
+            expected_data={
+                'results': [get_recipe_json(self.recipe1, self.user1)]
+            })
+        self.assert_response(
+            URL_RECIPES + '?is_in_shopping_cart=1',
+            login_as=self.user1,
+            expected_data={
+                'results': [get_recipe_json(self.recipe2, self.user1)]
+            })
+        self.assert_response(
+            URL_RECIPES + f'?author={self.user1.pk}',
+            expected_data={
+                'results': [
+                    get_recipe_json(self.recipe2),
+                    get_recipe_json(self.recipe1)
+                ]
+            })
+
     def test_detail(self):
         self.assert_response(
             get_recipe_url(self.recipe1.pk),

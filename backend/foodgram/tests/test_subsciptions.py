@@ -17,8 +17,10 @@ class SubscriptionTestCase(APIResponseTestCase):
         cls.user1 = create_user('test_sub_user_1')
         cls.user2 = create_user('test_sub_user_2')
         cls.user3 = create_user('test_sub_user_3')
+        cls.user4 = create_user('test_sub_user_4')
         cls.user1.subscriptions.create(user=cls.user1, subscribed_to=cls.user2)
         cls.user1.subscriptions.create(user=cls.user1, subscribed_to=cls.user3)
+        cls.user1.subscriptions.create(user=cls.user1, subscribed_to=cls.user4)
         cls.recipe1 = create_recipe('test_sub_recipe_1', cls.user2)
         cls.recipe2 = create_recipe('test_sub_recipe_2', cls.user2)
 
@@ -36,6 +38,28 @@ class SubscriptionTestCase(APIResponseTestCase):
                             get_recipe_json_short(self.recipe2),
                             get_recipe_json_short(self.recipe1)
                         ]),
+                    get_user_json(
+                        user=self.user3,
+                        subscribed=True,
+                        recipes_count=0,
+                        recipes=[]),
+                    get_user_json(
+                        user=self.user4,
+                        subscribed=True,
+                        recipes_count=0,
+                        recipes=[])
+                ]
+            })
+
+    def test_list_pagination(self):
+        self.assert_response(
+            URL_SUBSCRIPTIONS + '?limit=1&page=2',
+            login_as=self.user1,
+            expected_data={
+                'count': 3,
+                'next': 'http://testserver' + URL_SUBSCRIPTIONS + '?limit=1&page=3',
+                'previous': 'http://testserver' + URL_SUBSCRIPTIONS + '?limit=1',
+                'results': [
                     get_user_json(
                         user=self.user3,
                         subscribed=True,
@@ -66,6 +90,15 @@ class SubscriptionTestCase(APIResponseTestCase):
                 recipes_count=0,
                 recipes=[]
             ))
+
+    def test_subscribe_recipe_limit(self):
+        self.assert_response(
+            get_subscribe_url(self.user2.pk) + '?recipes_limit=1', method='post',
+            login_as=self.user3,
+            expected_status=status.HTTP_201_CREATED,
+            expected_data={
+                'recipes': [get_recipe_json_short(self.recipe2)]
+            })
 
     def test_subscribe_not_found(self):
         self.assert_response(

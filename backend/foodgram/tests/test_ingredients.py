@@ -16,6 +16,13 @@ class IngredientTestCase(APIResponseTestCase):
             expected_struct=[structs.ingredient])
         self.assertGreater(len(response.data), 0)
 
+    def test_list_filter(self):
+        response = self.assert_response(
+            URL_INGREDIENTS + '?name=аб',
+            expected_struct=[structs.ingredient])
+        for item in response.data:
+            self.assertTrue(item['name'].startswith('аб'))
+
     def test_detail(self):
         self.assert_response(
             get_ingredient_url(1),

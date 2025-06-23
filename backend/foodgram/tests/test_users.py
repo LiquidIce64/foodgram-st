@@ -47,6 +47,17 @@ class UserTestCase(APIResponseTestCase):
                 ]
             })
 
+    def test_list_pagination(self):
+        self.assert_response(
+            URL_USERS + '?limit=1&page=2',
+            expected_data={
+                'count': 3,
+                'next': 'http://testserver' + URL_USERS + '?limit=1&page=3',
+                'previous': 'http://testserver' + URL_USERS + '?limit=1',
+                'results': [get_user_json(user=self.user2)]
+            }
+        )
+
     def test_detail(self):
         self.assert_response(
             get_user_url(self.user1.pk),
