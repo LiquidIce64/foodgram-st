@@ -1,4 +1,5 @@
 from .utils import APIResponseTestCase, status
+from . import structs
 
 
 def get_ingredient_url(ingredient_id):
@@ -7,23 +8,18 @@ def get_ingredient_url(ingredient_id):
 
 URL_INGREDIENTS = '/api/ingredients/'
 
-INGREDIENT_STRUCT = {
-    'id': int,
-    'name': str,
-    'measurement_unit': str
-}
-
 
 class IngredientTestCase(APIResponseTestCase):
     def test_list(self):
-        response = self.assert_response(URL_INGREDIENTS)
-        self.assertIsInstance(response.data, list)
+        response = self.assert_response(
+            URL_INGREDIENTS,
+            expected_struct=[structs.ingredient])
         self.assertGreater(len(response.data), 0)
-        self.assert_json_structure(response.data[0], INGREDIENT_STRUCT)
 
     def test_detail(self):
-        response = self.assert_response(get_ingredient_url(1))
-        self.assert_json_structure(response.data, INGREDIENT_STRUCT)
+        self.assert_response(
+            get_ingredient_url(1),
+            expected_struct=structs.ingredient)
 
     def test_detail_not_found(self):
         self.assert_response(

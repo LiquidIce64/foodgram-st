@@ -100,7 +100,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Ingredient.objects)
+        queryset=models.Ingredient.objects, source='ingredient')
     name = serializers.CharField(
         read_only=True, source='ingredient.name')
     measurement_unit = serializers.CharField(
@@ -150,8 +150,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         for ingredient_data in ingredients_data:
             models.RecipeIngredient.objects.create(
                 recipe=recipe,
-                # Since id is a PKRelatedField, this is an Ingredient object
-                ingredient=ingredient_data['id'],
+                ingredient=ingredient_data['ingredient'],
                 amount=ingredient_data['amount']
             )
         return recipe
@@ -165,7 +164,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             for r_ing in recipe.ingredients.all()
         }
         data_mapping = {
-            data['id'].pk: data
+            data['ingredient'].pk: data
             for data in ingredients_data
         }
 
@@ -174,7 +173,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             if ingredient is None:
                 models.RecipeIngredient.objects.create(
                     recipe=recipe,
-                    ingredient=data['id'],
+                    ingredient=data['ingredient'],
                     amount=data['amount']
                 )
             else:

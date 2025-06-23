@@ -1,4 +1,8 @@
-from .utils import APIResponseTestCase, status, create_user, get_user_json
+from .utils import (
+    APIResponseTestCase, status, TEST_IMAGE_DATA,
+    create_user, get_user_json
+)
+from . import structs
 
 
 def get_detail_url(user_id):
@@ -12,14 +16,6 @@ URL_PASSWORD = '/api/users/set_password/'
 URL_LOGIN = '/api/auth/token/login/'
 URL_LOGOUT = '/api/auth/token/logout/'
 
-USER_STRUCT = {
-    'id': int,
-    'username': str,
-    'email': str,
-    'first_name': str,
-    'last_name': str
-}
-
 USER_CREATE_DATA = {
     'email': f'test_user4@example.com',
     'username': 'test_user_4',
@@ -29,9 +25,7 @@ USER_CREATE_DATA = {
 }
 
 AVATAR_CREATE_DATA = {
-    'avatar': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA\
-AEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7\
-EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg=='
+    'avatar': TEST_IMAGE_DATA
 }
 
 
@@ -70,11 +64,11 @@ class UserTestCase(APIResponseTestCase):
             expected_status=status.HTTP_404_NOT_FOUND)
 
     def test_create(self):
-        response = self.assert_response(
+        self.assert_response(
             URL_USERS, method='post',
             data=USER_CREATE_DATA,
-            expected_status=status.HTTP_201_CREATED)
-        self.assert_json_structure(response.data, USER_STRUCT)
+            expected_status=status.HTTP_201_CREATED,
+            expected_struct=structs.user_short)
 
     def test_create_invalid(self):
         self.assert_invalid_data(URL_USERS, USER_CREATE_DATA)
@@ -82,8 +76,8 @@ class UserTestCase(APIResponseTestCase):
     def test_profile(self):
         self.assert_response(
             URL_PROFILE,
-            expected_data=get_user_json(user=self.user1),
-            login_as=self.user1)
+            login_as=self.user1,
+            expected_data=get_user_json(user=self.user1))
 
     def test_profile_no_auth(self):
         self.assert_response(
@@ -93,23 +87,22 @@ class UserTestCase(APIResponseTestCase):
     def test_avatar(self):
         response = self.assert_response(
             URL_AVATAR, method='put',
-            data=AVATAR_CREATE_DATA,
-            login_as=self.user1)
+            login_as=self.user1,
+            data=AVATAR_CREATE_DATA)
         self.assertRegex(response.data.get('avatar'), r'https?:\/\/[^\/]+\/media\/users\/.*\..*')
 
     def test_avatar_invalid(self):
         self.assert_response(
             URL_AVATAR, method='put',
+            login_as=self.user1,
             data={},
-            expected_status=status.HTTP_400_BAD_REQUEST,
-            login_as=self.user1)
+            expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_avatar_delete(self):
         self.assert_response(
             URL_AVATAR, method='delete',
-            expected_status=status.HTTP_204_NO_CONTENT,
-            login_as=self.user1
-        )
+            login_as=self.user1,
+            expected_status=status.HTTP_204_NO_CONTENT)
 
     def test_avatar_no_auth(self):
         self.assert_response(
@@ -122,21 +115,21 @@ class UserTestCase(APIResponseTestCase):
     def test_password(self):
         self.assert_response(
             URL_PASSWORD, method='post',
+            login_as=self.user1,
             data={
                 'new_password': 'foodgram_test2',
                 'current_password': 'foodgram_test'
             },
-            expected_status=status.HTTP_204_NO_CONTENT,
-            login_as=self.user1)
+            expected_status=status.HTTP_204_NO_CONTENT)
 
     def test_password_invalid(self):
         self.assert_invalid_data(
             URL_PASSWORD,
+            login_as=self.user1,
             data={
                 'new_password': 'foodgram_test2',
                 'current_password': 'foodgram_test'
-            },
-            login_as=self.user1)
+            })
 
     def test_password_no_auth(self):
         self.assert_response(
@@ -155,8 +148,8 @@ class UserTestCase(APIResponseTestCase):
     def test_logout(self):
         self.assert_response(
             URL_LOGOUT, method='post',
-            expected_status=status.HTTP_204_NO_CONTENT,
-            login_as=self.user1)
+            login_as=self.user1,
+            expected_status=status.HTTP_204_NO_CONTENT)
 
     def test_logout_no_auth(self):
         self.assert_response(
