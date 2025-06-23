@@ -1,4 +1,9 @@
-Находясь в папке infra, выполните команду docker-compose up. При выполнении этой команды контейнер frontend, описанный в docker-compose.yml, подготовит файлы, необходимые для работы фронтенд-приложения, а затем прекратит свою работу.
+# Инструкция по установке
+Находясь в папке production, выполните команды:\
+```sudo docker compose -f docker-compose.production.yml pull```\
+```sudo docker compose -f docker-compose.production.yml up -d```
 
-По адресу http://localhost изучите фронтенд веб-приложения, а по адресу http://localhost/api/docs/ — спецификацию API.
+После этого веб-сайт станет доступен по адресу http://localhost/
 
+Чтобы добавить суперпользователя, выполните команду:\
+```sudo docker compose -f docker-compose.production.yml exec backend python manage.py createsuperuser```
