@@ -160,11 +160,15 @@ class SubscriptionTestCase(APIResponseTestCase):
             'name': 'test_recipe_edit',
             'ingredients': [get_ingredient_json(id=2, amount=2)]
         }
-        self.assert_response(
+        expected_data.pop('image')
+        response = self.assert_response(
             get_recipe_url(self.recipe1.pk), method='patch',
             login_as=self.user1,
             data=RECIPE_UPDATE_DATA,
             expected_data=expected_data)
+        self.assertRegex(
+            response.data.get('image'),
+            r'https?:\/\/[^\/]+\/media\/recipes\/.*\..*')
 
     def test_update_no_auth(self):
         self.assert_response(
