@@ -98,10 +98,10 @@ class SubscriptionTestCase(APIResponseTestCase):
             })
 
         self.assert_response(
-            URL_RECIPES + f'?is_favorited=1',
+            URL_RECIPES + '?is_favorited=1',
             expected_data={'results': []})
         self.assert_response(
-            URL_RECIPES + f'?is_in_shopping_cart=1',
+            URL_RECIPES + '?is_in_shopping_cart=1',
             expected_data={'results': []})
 
     def test_detail(self):
