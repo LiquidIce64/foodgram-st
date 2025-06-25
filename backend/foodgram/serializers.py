@@ -109,6 +109,8 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         read_only=True, source='ingredient.name')
     measurement_unit = serializers.CharField(
         read_only=True, source='ingredient.measurement_unit')
+    amount = serializers.IntegerField(
+        min_value=models.MIN_AMOUNT_VALUE, max_value=models.MAX_AMOUNT_VALUE)
 
     class Meta:
         model = models.RecipeIngredient
@@ -124,6 +126,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     author = UserSerializer(read_only=True)
     ingredients = RecipeIngredientSerializer(many=True)
+    cooking_time = serializers.IntegerField(
+        min_value=models.MIN_AMOUNT_VALUE, max_value=models.MAX_AMOUNT_VALUE)
 
     class Meta:
         model = models.Recipe
