@@ -8,10 +8,11 @@ def load_data(apps, schema_editor):
     Ingredient = apps.get_model('foodgram', 'Ingredient')
     data_path = 'foodgram/migrations/data/0002_ingredients.json'
     with open(data_path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        for item in data:
-            instance = Ingredient(**item)
-            instance.save()
+        ingredients_data = json.load(f)
+        Ingredient.objects.bulk_create([
+            Ingredient(**data)
+            for data in ingredients_data
+        ])
 
 
 class Migration(migrations.Migration):
