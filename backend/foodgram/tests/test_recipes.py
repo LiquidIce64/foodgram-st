@@ -23,14 +23,12 @@ RECIPE_CREATE_DATA = {
     'cooking_time': 1
 }
 
-RECIPE_UPDATE_DATA = {
+RECIPE_UPDATE_DATA = RECIPE_CREATE_DATA | {
     'ingredients': [{
         'id': 2,
         'amount': 2
     }],
-    'name': 'test_recipe_edit',
-    'text': 'test recipe',
-    'cooking_time': 1
+    'name': 'test_recipe_edit'
 }
 
 
@@ -125,6 +123,32 @@ class SubscriptionTestCase(APIResponseTestCase):
         self.assert_invalid_data(
             URL_RECIPES, RECIPE_CREATE_DATA,
             login_as=self.user1)
+
+        self.assert_response(
+            URL_RECIPES, method='post',
+            login_as=self.user1,
+            data=RECIPE_CREATE_DATA | {'ingredients': []},
+            expected_status=status.HTTP_400_BAD_REQUEST
+        )
+
+        self.assert_response(
+            URL_RECIPES, method='post',
+            login_as=self.user1,
+            data=RECIPE_CREATE_DATA | {
+                'ingredients': [
+                    {'id': 1, 'amount': 1},
+                    {'id': 1, 'amount': 1}
+                ]
+            },
+            expected_status=status.HTTP_400_BAD_REQUEST
+        )
+
+        self.assert_response(
+            URL_RECIPES, method='post',
+            login_as=self.user1,
+            data=RECIPE_CREATE_DATA | {'image': ''},
+            expected_status=status.HTTP_400_BAD_REQUEST
+        )
 
     def test_create_no_auth(self):
         self.assert_response(

@@ -151,6 +151,30 @@ class RecipeSerializer(serializers.ModelSerializer):
             and user.shopping_cart.filter(recipe=obj).exists()
         )
 
+    def validate(self, attrs):
+        ingredients = attrs.get('ingredients')
+
+        if not ingredients:
+            raise serializers.ValidationError(
+                {'ingredients': 'at least one ingredient required'}
+            )
+
+        ing_set = set()
+        for ing in ingredients:
+            ing_id = ing.get('id')
+            if ing_id in ing_set:
+                raise serializers.ValidationError(
+                    {'ingredients': 'no duplicate ingredients allowed'}
+                )
+            ing_set.add(ing_id)
+
+        if not attrs.get('image'):
+            raise serializers.ValidationError(
+                {'image': 'non-empty image data required'}
+            )
+
+        return super().validate(attrs)
+
     @staticmethod
     def set_ingredients(instance, ingredients_data):
         instance.ingredients.bulk_create([
