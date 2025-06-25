@@ -32,7 +32,6 @@ class SubscriptionViewSet(mixins.ListModelMixin, GenericViewSet):
         return (
             models.User.objects
             .filter(subscribers__user=self.request.user)
-            .order_by('id')
         )
 
     def create(self, request, id, *args, **kwargs):
@@ -76,7 +75,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(ModelViewSet):
-    queryset = models.Recipe.objects.order_by('-date_posted')
+    queryset = models.Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
     filter_backends = (filters.RecipeFilterBackend,)
     permission_classes = (permissions.AdminAuthorOrReadOnly,)
