@@ -6,6 +6,7 @@ from djoser.serializers import (
 )
 
 from . import models
+from .tests.structs import recipe
 
 
 class UserSerializer(BaseUserSerializer):
@@ -151,46 +152,25 @@ class RecipeSerializer(serializers.ModelSerializer):
             and user.shopping_cart.filter(recipe=obj).exists()
         )
 
+    @staticmethod
+    def set_ingredients(instance, ingredients_data):
+        instance.ingredients.bulk_create([
+            models.RecipeIngredient(recipe=instance, **data)
+            for data in ingredients_data
+        ])
+
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
         validated_data['author'] = self.context['request'].user
-        recipe = models.Recipe.objects.create(**validated_data)
-        for ingredient_data in ingredients_data:
-            models.RecipeIngredient.objects.create(
-                recipe=recipe,
-                ingredient=ingredient_data['ingredient'],
-                amount=ingredient_data['amount']
-            )
+        recipe = super().create(validated_data)
+        self.set_ingredients(recipe, ingredients_data)
         return recipe
 
     def update(self, instance, validated_data):
         ingredients_data = validated_data.pop('ingredients')
         recipe = super().update(instance, validated_data)
-
-        ingredient_mapping = {
-            r_ing.ingredient.pk: r_ing
-            for r_ing in recipe.ingredients.all()
-        }
-        data_mapping = {
-            data['ingredient'].pk: data
-            for data in ingredients_data
-        }
-
-        for ingredient_id, data in data_mapping.items():
-            ingredient = ingredient_mapping.get(ingredient_id, None)
-            if ingredient is None:
-                models.RecipeIngredient.objects.create(
-                    recipe=recipe,
-                    ingredient=data['ingredient'],
-                    amount=data['amount']
-                )
-            else:
-                ingredient.update(amount=data['amount'])
-
-        for ingredient_id, ingredient in ingredient_mapping.items():
-            if ingredient_id not in data_mapping:
-                ingredient.delete()
-
+        instance.ingredients.all().delete()
+        self.set_ingredients(recipe, ingredients_data)
         return recipe
 
 
