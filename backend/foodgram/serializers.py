@@ -6,7 +6,6 @@ from djoser.serializers import (
 )
 
 from . import models
-from .tests.structs import recipe
 
 
 class UserSerializer(BaseUserSerializer):
