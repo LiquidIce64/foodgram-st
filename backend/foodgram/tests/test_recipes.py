@@ -13,10 +13,10 @@ URL_RECIPES = '/api/recipes/'
 
 
 RECIPE_CREATE_DATA = {
-    'ingredients': [{
-        'id': 1,
-        'amount': 1
-    }],
+    'ingredients': [
+        {'id': 1, 'amount': 1},
+        {'id': 2, 'amount': 2}
+    ],
     'image': TEST_IMAGE_DATA,
     'name': 'test_recipe_4',
     'text': 'test recipe',
@@ -24,10 +24,10 @@ RECIPE_CREATE_DATA = {
 }
 
 RECIPE_UPDATE_DATA = RECIPE_CREATE_DATA | {
-    'ingredients': [{
-        'id': 2,
-        'amount': 2
-    }],
+    'ingredients': [
+        {'id': 2, 'amount': 2},
+        {'id': 3, 'amount': 3}
+    ],
     'name': 'test_recipe_edit'
 }
 
@@ -97,6 +97,13 @@ class SubscriptionTestCase(APIResponseTestCase):
                 ]
             })
 
+        self.assert_response(
+            URL_RECIPES + f'?is_favorited=1',
+            expected_data={'results': []})
+        self.assert_response(
+            URL_RECIPES + f'?is_in_shopping_cart=1',
+            expected_data={'results': []})
+
     def test_detail(self):
         self.assert_response(
             get_recipe_url(self.recipe1.pk),
@@ -158,7 +165,10 @@ class SubscriptionTestCase(APIResponseTestCase):
     def test_update(self):
         expected_data = get_recipe_json(self.recipe1, self.user1) | {
             'name': 'test_recipe_edit',
-            'ingredients': [get_ingredient_json(id=2, amount=2)]
+            'ingredients': [
+                get_ingredient_json(id=2, amount=2),
+                get_ingredient_json(id=3, amount=3),
+            ]
         }
         expected_data.pop('image')
         response = self.assert_response(

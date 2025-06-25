@@ -161,7 +161,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         ing_set = set()
         for ing in ingredients:
-            ing_id = ing.get('id')
+            ing_id = ing.get('ingredient').pk
             if ing_id in ing_set:
                 raise serializers.ValidationError(
                     {'ingredients': 'no duplicate ingredients allowed'}

@@ -21,10 +21,14 @@ class RecipeFilterBackend(BaseFilterBackend):
 
         if filter_author is not None:
             queryset = queryset.filter(author__pk=filter_author)
-        if filter_cart:
-            queryset = queryset.filter(in_shopping_carts__user=request.user)
-        if filter_favorites:
-            queryset = queryset.filter(favorites__user=request.user)
+
+        if request.user.is_authenticated:
+            if filter_cart:
+                queryset = queryset.filter(in_shopping_carts__user=request.user)
+            if filter_favorites:
+                queryset = queryset.filter(favorites__user=request.user)
+        elif filter_cart or filter_favorites:
+            queryset = queryset.none()
 
         return queryset
 
